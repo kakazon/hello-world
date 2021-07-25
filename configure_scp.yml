@@ -1,0 +1,15 @@
+---
+- name: run multiple commands on remote devices
+  hosts: r3
+  gather_facts: false
+
+  tasks:
+        - name: enable scp
+          ios_config:
+             lines: no ip scp server enable
+             
+
+          register: print_output
+
+        - debug: var=print_output.stdout_lines
+
