@@ -23,14 +23,9 @@ ansible_become=yes
 ansilbe_become_method=enable
 ansible_become_password=eve
 
-[juniper]
+[junos_devices]
 192.168.63.153
 
-[juniper:vars]
-ansible_connection=network_cli  
-ansible_network_os=junos
-ansible_user=root
-ansible_password=vsrx01
-#ansible_become=yes
-#ansilbe_become_method=enable
-#ansible_become_password=eve
+[junos_devices:vars]
+username=root
+password=vsrx01
