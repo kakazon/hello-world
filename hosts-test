@@ -10,6 +10,3 @@ ansible_password=eve
 ansible_become=yes
 ansilbe_become_method=enable
 ansible_become_password=eve
-
-[r3]
-R3 ansible_host=192.168.63.152
