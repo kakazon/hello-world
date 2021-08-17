@@ -4,7 +4,7 @@
   gather_facts: false
 
   tasks:
-        - name: show run backup
+        - name: show run
           ios_command:
              commands:
                       - show run
@@ -13,7 +13,7 @@
 
         - debug: var=print_output.stdout_lines
 
-        - name: save putput to a file
+        - name: save output to a file
           copy: 
             content: "{{ print_output.stdout[0] }}" 
-            dest: "/home/kakazon/ansible_lab/ansible_output/{{ inventory_hostname }}.txt"
+            dest: "/home/kakazon/ansible_lab/log/{{ inventory_hostname }}.txt"

@@ -1,0 +1,30 @@
+---
+- hosts: all
+  gather_facts: false #デフォルトtrue,つまり各種システム情報はデフォルトで収集される。不要のため、falseにする
+
+  tasks:
+    - name: define time # ログ保存日時変数を定義
+      set_fact:   # Set host facts from a task
+        exe_date: "{{ lookup('pipe', 'date +%Y%m%d_%H%M') }}"    # lookupプラグインpipe:read output from a command
+      run_once: true　  # 一度のみ実行　
+
+    - name: define directory rule #ディレクトリ作成変数を定義
+      set_fact:
+      #　inventory_dir:特別な変数、inventory_hostname を最初に定義したインベントリーソースのディレクトリー
+        logdir_date: "{{ inventory_dir }}/log/log_{{ exe_date }}"
+      run_once: true
+
+    - name: create directory for log      # ログ保存用実行日時ディレクトリ作成
+      file:
+        path: "{{ logdir_date }}/"
+        state: directory
+      register: logdir
+      #delegate_to: localhost
+      run_once: true
+
+- name: ios section
+  hosts: ios
+  gather_facts: false
+  #角色可以根据已知的文件基础结构自动加载某些变量、任务和处理程序。需要按照特定的文件结构存放
+  roles: 
+      - get_ios_command

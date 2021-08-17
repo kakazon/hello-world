@@ -1,0 +1,22 @@
+---
+- name: get ios_command_show
+  ios_command:
+    commands: "{{ item }}" #默认使用{{ item }},循环遍历loop列表中的占位符（变量）
+  register: show_result
+  # lookupプラグインfile:read file contents,commands_show是在hosts文件中定义的；splitlines()按改行来循环，split()则是按照给的参数
+  loop: "{{ lookup('file', 'files/{{ commands_show }}').splitlines() }}"
+
+- name: set show results
+  set_fact:
+    show_results: "{{ show_result.results }}"
+
+- name: save show per hosts
+  #ansible.builtin.blockinfile – Insert/update/remove a text block surrounded by marker lines
+  blockinfile:
+    block: "{{ item.stdout[0] }}"  #The text to insert inside the marker lines.
+    path: "{{ logdir.path }}/{{ inventory_hostname }}({{lookup('pipe','date +%Y%m%d')}})-log.log"
+    marker: "======================  {{ item.item }} ======================="
+    create: yes     #Create a new file if it does not exist.
+  loop: "{{ show_results }}"
+  loop_control:     #表示される出力を制限するには、label ディレクティブに loop_control を付けて使用
+    label: "{{ item.item }}"

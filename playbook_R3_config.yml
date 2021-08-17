@@ -1,0 +1,32 @@
+---
+
+- hosts: R3
+  gather_facts: no
+  connection: network_cli
+
+  vars:
+    config_filename: "R3_config_210805.txt"
+
+  tasks:
+    - name: set config on remote device (ios) #读取config文件，进行设定
+      ios_config:
+        src: "{{ config_filename }}"
+        match: none   #幂等性OFF
+        save_when: modified  #只有当配置被变更的适合保存，还有一种是写法是 save：yes，，即不论任何适合都保存
+      when: ansible_network_os == 'ios'  #仅当对象OS是ios时才执行本操作
+
+    - name: show run backup  #备份sh run
+      ios_command:
+         commands:
+                - show run
+                - show terminal
+                - show clock
+                - show startup-config
+      register: command_result
+
+    - debug: var=command_result.stdout_lines
+
+    - name: save log to a file #保存sh run结果至指定文件
+      copy: 
+        content: "{{ command_result.stdout[0] }}" 
+        dest: "/home/kakazon/ansible_lab/log/{{ inventory_hostname }}_show_run_{{lookup('pipe','date +%Y%m%d')}}.log"

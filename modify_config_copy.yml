@@ -1,0 +1,10 @@
+---
+- hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: set config on remote device #读取config文件，进行设定
+      ios_config:
+        src: "files/{{ inventory_hostname }}_config.txt"
+        match: none   #幂等性OFF
+        save_when: modified  #只有当配置被变更的适合保存，还有一种是写法是 save：yes，，即不论任何适合都保存
